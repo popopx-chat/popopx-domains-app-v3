@@ -232,13 +232,28 @@ describe('Pricing', () => {
     expect(props.callback).not.toHaveBeenCalled()
   })
 
-  it('should offer a community name for two years only', () => {
+  it('should offer every name for two years only', () => {
     nameTerms('general')
     const { rerender } = render(<Pricing {...makeProps()} />)
-    expect(screen.getByText(yearsToSeconds(3))).toBeInTheDocument()
+    expect(screen.getByText(yearsToSeconds(2))).toBeInTheDocument()
     nameTerms('community')
     rerender(<Pricing {...makeProps()} />)
     expect(screen.getByText(yearsToSeconds(2))).toBeInTheDocument()
+  })
+
+  it('should register for two years when a longer duration or a date was saved', async () => {
+    const props = makeProps({
+      registrationData: {
+        seconds: yearsToSeconds(3),
+        durationType: 'date',
+        started: false,
+      } as RegistrationReducerDataItem,
+    })
+    render(<Pricing {...props} />)
+    await userEvent.click(screen.getByTestId('next-button'))
+    expect(props.callback).toHaveBeenCalledWith(
+      expect.objectContaining({ seconds: yearsToSeconds(2), durationType: 'years' }),
+    )
   })
 
   it.each(['general', 'community'] as const)(
