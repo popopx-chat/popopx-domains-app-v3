@@ -278,6 +278,17 @@ describe('Pricing', () => {
     expect(screen.getByTestId('next-button')).toBeDisabled()
   })
 
+  it('should only say public sales are not open while they are closed', () => {
+    mockUseControllerLimits.mockReturnValue({ publicSalesOpen: false })
+    nameTerms('general')
+    render(<Pricing {...makeProps()} />)
+    expect(screen.getByTestId('public-sales-closed')).toHaveTextContent(
+      'Public sales are not open yet',
+    )
+    expect(screen.queryByTestId('terms')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('next-button')).not.toBeInTheDocument()
+  })
+
   it.each([
     [
       'the reserved status',

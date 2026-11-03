@@ -558,7 +558,7 @@ const Pricing = ({
   const { isReserved, loaded: reservedLoaded } = useReservedStatus({ name })
   const terms = useNameTerms({ name })
   const acceptance = useTermsAcceptance(terms, registrationData.terms)
-  const { minCharLength } = useControllerLimits()
+  const { minCharLength, publicSalesOpen } = useControllerLimits()
   const labelLen = name ? name.split('.')[0].length : 0
   // minCharLength is only enforced on top-level register(); subname creation
   // bypasses the controller, so the UI gate must too.
@@ -648,6 +648,19 @@ const Pricing = ({
 
   const unsafeDisplayEstimatedGasFee =
     estimatedGasFee === 0n ? previousEstimatedGasFee : estimatedGasFee
+
+  if (publicSalesOpen === false)
+    return (
+      <StyledCard>
+        <StyledHeading>{t('heading', { name: beautifiedName })}</StyledHeading>
+        <Helper alert="warning" alignment="horizontal" data-testid="public-sales-closed">
+          <div>
+            <Typography weight="bold">Public sales are not open yet</Typography>
+            <Typography>Names can&apos;t be registered here until public sales open.</Typography>
+          </div>
+        </Helper>
+      </StyledCard>
+    )
 
   return (
     <StyledCard>
